@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ahorro de Riesgo — Taller</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#111;color:#f0f0f0;min-height:100vh}
+
+.app{max-width:700px;margin:0 auto;padding:16px}
+
+.header{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.header-icon{width:44px;height:44px;background:#e07b00;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.header-icon i{font-size:22px;color:#fff}
+.header h1{font-size:18px;font-weight:600;color:#fff}
+.header span{font-size:12px;color:#888;display:block;margin-top:2px}
+
+.total-card{background:#e07b00;border-radius:12px;padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.total-card .lbl{font-size:13px;color:rgba(255,255,255,0.75);font-weight:500}
+.total-card .num{font-size:32px;font-weight:700;color:#fff;line-height:1}
+.total-card .sub{font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px}
+.total-card .right{text-align:right}
+.total-card .right .lbl2{font-size:12px;color:rgba(255,255,255,0.7)}
+.total-card .right .num2{font-size:20px;font-weight:600;color:#fff}
+
+.section{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.section-title{font-size:14px;font-weight:600;color:#e07b00;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title i{font-size:17px}
+
+.mecanicos-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.mec-card{background:#222;border:1px solid #333;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.mec-card:hover{border-color:#e07b00}
+.mec-card.selected{border-color:#e07b00;background:#2a1f00}
+.mec-avatar{width:36px;height:36px;border-radius:50%;background:#e07b00;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.mec-name{font-size:13px;font-weight:500;color:#f0f0f0}
+.mec-total{font-size:12px;color:#e07b00;font-weight:600}
+.mec-weeks{font-size:11px;color:#666;margin-top:1px}
+
+.add-mec-row{display:flex;gap:8px;margin-top:4px}
+.inp{background:#222;border:1px solid #333;border-radius:8px;padding:8px 12px;font-size:13px;color:#f0f0f0;outline:none;transition:border-color .15s;width:100%}
+.inp:focus{border-color:#e07b00}
+.inp::placeholder{color:#555}
+.inp-full{flex:1;width:auto}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-orange{background:#e07b00;color:#fff}
+.btn-orange:hover{background:#c96e00}
+.btn-ghost{background:#222;border:1px solid #333;color:#aaa}
+.btn-ghost:hover{border-color:#e07b00;color:#e07b00}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-red{background:#2a1515;border:1px solid #5a2020;color:#f09595}
+.btn-red:hover{background:#3a1a1a}
+
+.registro-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-lbl{font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.form-group{display:flex;flex-direction:column}
+.form-group.full{grid-column:span 2}
+
+.no-mec{font-size:13px;color:#555;padding:10px 0;text-align:center;grid-column:span 2}
+
+.tabla{width:100%;border-collapse:collapse;font-size:13px}
+.tabla thead th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #2a2a2a}
+.tabla tbody tr{border-bottom:1px solid #222;transition:background .1s}
+.tabla tbody tr:hover{background:#222}
+.tabla tbody td{padding:10px 10px;vertical-align:middle}
+.tabla tbody tr:last-child{border-bottom:none}
+
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.pill-orange{background:#2a1f00;color:#e07b00;border:1px solid #4a3500}
+.pill-gray{background:#222;color:#888;border:1px solid #333}
+
+.mes-header{background:#222;border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.mes-titulo{font-size:13px;font-weight:600;color:#f0f0f0}
+.mes-total{font-size:13px;font-weight:600;color:#e07b00}
+
+.semanas-list{margin-bottom:12px}
+.semana-row{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid #222;gap:12px}
+.semana-row:last-child{border-bottom:none}
+.semana-num{font-size:11px;color:#555;min-width:60px}
+.semana-mec{font-size:12px;color:#aaa;flex:1}
+.semana-fecha{font-size:11px;color:#666;min-width:90px;text-align:right}
+.semana-monto{font-size:13px;font-weight:600;color:#e07b00;min-width:80px;text-align:right}
+.semana-del{margin-left:8px}
+
+.empty{text-align:center;padding:24px;color:#444;font-size:13px}
+.empty i{font-size:30px;display:block;margin-bottom:8px;opacity:.3}
+
+.toast{position:fixed;bottom:20px;right:20px;background:#e07b00;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+
+@media(max-width:500px){
+  .mecanicos-grid{grid-template-columns:1fr}
+  .registro-form{grid-template-columns:1fr}
+  .form-group.full{grid-column:span 1}
+  .total-card{flex-direction:column;gap:12px;text-align:center}
+  .total-card .right{text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="header-icon"><i class="ti ti-tool"></i></div>
+    <div>
+      <h1>Ahorro de riesgo — taller</h1>
+      <span id="fecha-hoy"></span>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <div>
+      <div class="lbl">Fondo total acumulado</div>
+      <div class="num" id="total-general">$0.00</div>
+      <div class="sub" id="total-semanas">0 semanas registradas</div>
+    </div>
+    <div class="right">
+      <div class="lbl2">Mecánicos activos</div>
+      <div class="num2" id="total-mecanicos">0</div>
+    </div>
+  </div>
+
+  <!-- MECANICOS -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-users"></i> Mecánicos</div>
+    <div class="mecanicos-grid" id="mecanicos-grid"></div>
+    <div class="add-mec-row">
+      <input class="inp inp-full" id="nuevo-nombre" placeholder="Nombre del mecánico" maxlength="30"
+        onkeydown="if(event.key==='Enter') agregarMecanico()">
+      <button class="btn btn-orange" onclick="agregarMecanico()"><i class="ti ti-plus"></i> Agregar</button>
+    </div>
+  </div>
+
+  <!-- REGISTRO SEMANAL -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-cash"></i> Registrar comisión semanal</div>
+    <div class="registro-form">
+      <div class="form-group">
+        <div class="form-lbl">Mecánico</div>
+        <select class="inp" id="reg-mec"></select>
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Comisión ahorrada ($)</div>
+        <input class="inp" type="number" id="reg-monto" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Fecha</div>
+        <input class="inp" type="date" id="reg-fecha">
+      </div>
+      <div class="form-group">
+        <div class="form-lbl">Semana del año (1–52)</div>
+        <input class="inp" type="number" id="reg-semana" placeholder="1–52" min="1" max="52">
+      </div>
+      <div class="form-group full">
+        <div class="form-lbl">Nota (opcional)</div>
+        <input class="inp" type="text" id="reg-nota" placeholder="Ej: semana buena, trabajo extra...">
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px">
+      <button class="btn btn-orange" onclick="registrarComision()"><i class="ti ti-check"></i> Guardar en historial</button>
+    </div>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-history"></i> Historial por mes</div>
+    <div id="historial"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FB_KEY = 'taller_ahorro_v2';
+let mecanicos = [];
+let registros = [];
+let idCont = Date.now();
+
+function uid(){ return (++idCont).toString(36); }
+
+function guardarLocal(){
+  localStorage.setItem(FB_KEY, JSON.stringify({mecanicos, registros}));
+}
+
+function cargarLocal(){
+  try{
+    const d = JSON.parse(localStorage.getItem(FB_KEY)||'{}');
+    mecanicos = d.mecanicos || [];
+    registros  = d.registros  || [];
+  } catch(e){ mecanicos=[]; registros=[]; }
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function semanaActual(){
+  const hoy   = new Date();
+  const inicio = new Date(hoy.getFullYear(), 0, 1);
+  return Math.ceil(((hoy - inicio) / 86400000 + inicio.getDay() + 1) / 7);
+}
+
+function init(){
+  cargarLocal();
+  const hoy = new Date();
+  document.getElementById('fecha-hoy').textContent =
+    hoy.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('reg-fecha').value  = hoy.toISOString().split('T')[0];
+  document.getElementById('reg-semana').value = semanaActual();
+  render();
+}
+
+function render(){
+  renderMecanicos();
+  renderSelectMec();
+  renderHistorial();
+  renderTotales();
+}
+
+function renderTotales(){
+  const total = registros.reduce((s,r)=>s+r.monto, 0);
+  document.getElementById('total-general').textContent  = '$'+total.toFixed(2);
+  document.getElementById('total-semanas').textContent  = registros.length+' semanas registradas';
+  document.getElementById('total-mecanicos').textContent = mecanicos.length;
+}
+
+function renderMecanicos(){
+  const g = document.getElementById('mecanicos-grid');
+  if(!mecanicos.length){
+    g.innerHTML = '<div class="no-mec">Agrega mecánicos para comenzar</div>';
+    return;
+  }
+  g.innerHTML = mecanicos.map(m => {
+    const total   = registros.filter(r=>r.mecId===m.id).reduce((s,r)=>s+r.monto, 0);
+    const semanas = registros.filter(r=>r.mecId===m.id).length;
+    const ini     = m.nombre.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+    return `
+    <div class="mec-card" id="mec-${m.id}" onclick="selMec('${m.id}')">
+      <div class="mec-avatar">${ini}</div>
+      <div style="flex:1;min-width:0">
+        <div class="mec-name">${m.nombre}</div>
+        <div class="mec-total">$${total.toFixed(2)}</div>
+        <div class="mec-weeks">${semanas} semanas</div>
+      </div>
+      <button class="btn btn-red btn-sm" onclick="event.stopPropagation();eliminarMec('${m.id}')"
+        title="Eliminar mecánico"><i class="ti ti-trash"></i></button>
+    </div>`;
+  }).join('');
+}
+
+function selMec(id){
+  document.getElementById('reg-mec').value = id;
+  document.querySelectorAll('.mec-card').forEach(c=>c.classList.remove('selected'));
+  const card = document.getElementById('mec-'+id);
+  if(card) card.classList.add('selected');
+}
+
+function renderSelectMec(){
+  const sel = document.getElementById('reg-mec');
+  const val = sel.value;
+  sel.innerHTML = '<option value="">-- Seleccionar mecánico --</option>' +
+    mecanicos.map(m=>`<option value="${m.id}">${m.nombre}</option>`).join('');
+  if(val) sel.value = val;
+}
+
+function agregarMecanico(){
+  const n = document.getElementById('nuevo-nombre').value.trim();
+  if(!n){ toast('Escribe el nombre del mecánico'); return; }
+  if(mecanicos.find(m=>m.nombre.toLowerCase()===n.toLowerCase())){ toast('Ya existe ese mecánico'); return; }
+  mecanicos.push({id:uid(), nombre:n});
+  document.getElementById('nuevo-nombre').value = '';
+  guardarLocal();
+  render();
+  toast('Mecánico agregado ✓');
+}
+
+function eliminarMec(id){
+  if(!confirm('¿Eliminar este mecánico? Sus registros de ahorro se mantienen en el historial.')) return;
+  mecanicos = mecanicos.filter(m=>m.id!==id);
+  guardarLocal();
+  render();
+  toast('Mecánico eliminado');
+}
+
+function registrarComision(){
+  const mecId  = document.getElementById('reg-mec').value;
+  const monto  = parseFloat(document.getElementById('reg-monto').value);
+  const fecha  = document.getElementById('reg-fecha').value;
+  const semana = parseInt(document.getElementById('reg-semana').value);
+  const nota   = document.getElementById('reg-nota').value.trim();
+
+  if(!mecId)        { toast('Selecciona un mecánico');        return; }
+  if(!monto||monto<=0){ toast('Ingresa una comisión válida'); return; }
+  if(!fecha)        { toast('Selecciona la fecha');           return; }
+
+  const mec = mecanicos.find(m=>m.id===mecId);
+  const mes = fecha.substring(0,7);
+
+  registros.unshift({
+    id:       uid(),
+    mecId,
+    mecNombre: mec ? mec.nombre : '—',
+    monto,
+    fecha,
+    semana:   semana || semanaActual(),
+    mes,
+    nota
+  });
+
+  document.getElementById('reg-monto').value = '';
+  document.getElementById('reg-nota').value  = '';
+  guardarLocal();
+  render();
+  toast('Comisión guardada en el historial ✓');
+}
+
+function eliminarRegistro(id){
+  if(!confirm('¿Eliminar este registro del historial?')) return;
+  registros = registros.filter(r=>r.id!==id);
+  guardarLocal();
+  render();
+  toast('Registro eliminado');
+}
+
+function renderHistorial(){
+  const cont = document.getElementById('historial');
+  if(!registros.length){
+    cont.innerHTML = '<div class="empty"><i class="ti ti-calendar"></i>Sin registros aún — empieza agregando la primera comisión</div>';
+    return;
+  }
+
+  const porMes = {};
+  registros.forEach(r=>{
+    if(!porMes[r.mes]) porMes[r.mes] = [];
+    porMes[r.mes].push(r);
+  });
+
+  const meses = Object.keys(porMes).sort((a,b)=>b.localeCompare(a));
+
+  cont.innerHTML = meses.map(mes => {
+    const lista    = porMes[mes];
+    const totalMes = lista.reduce((s,r)=>s+r.monto, 0);
+    const [y,m]    = mes.split('-');
+    const nombreMes = new Date(+y,+m-1,1)
+      .toLocaleDateString('es-MX',{month:'long',year:'numeric'});
+
+    const rows = lista
+      .sort((a,b)=>b.semana-a.semana)
+      .map(r=>`
+      <div class="semana-row">
+        <div class="semana-num"><span class="pill pill-gray">Sem ${r.semana}</span></div>
+        <div class="semana-mec">
+          ${r.mecNombre}
+          ${r.nota ? '<br><span style="font-size:11px;color:#555">'+r.nota+'</span>' : ''}
+        </div>
+        <div class="semana-fecha">${r.fecha}</div>
+        <div class="semana-monto">$${r.monto.toFixed(2)}</div>
+        <button class="btn btn-red btn-sm semana-del"
+          onclick="eliminarRegistro('${r.id}')" title="Eliminar">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>`).join('');
+
+    return `
+    <div class="semanas-list">
+      <div class="mes-header">
+        <div class="mes-titulo" style="text-transform:capitalize">${nombreMes}</div>
+        <div class="mes-total">
+          $${totalMes.toFixed(2)}
+          <span style="font-size:11px;color:rgba(224,123,0,0.6);font-weight:400">
+            (${lista.length} sem.)
+          </span>
+        </div>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+init();
+</script>
+</body>
+</html>
